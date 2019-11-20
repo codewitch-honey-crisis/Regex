@@ -19,6 +19,11 @@ namespace RE
 		/// <returns>A new finite state machine equivilent to this state machine but with no epsilon transitions</returns>
 		public CharFA<TAccept> ToDfa(IProgress<CharFAProgress> progress = null)
 		{
+			// if it's already a DFA we don't need to do this transformation.
+			// however, we still need to clone the state machine it because
+			// the consumer expects a copy, not the original state.
+			if (IsDfa)
+				return Clone();
 			// The DFA states are keyed by the set of NFA states they represent.
 			var dfaMap = new Dictionary<List<CharFA<TAccept>>, CharFA<TAccept>>(_SetComparer.Default);
 
@@ -129,6 +134,19 @@ namespace RE
 				++j;
 			}
 			return result;
+		}
+		/// <summary>
+		/// Indicates whether or not this state machine is a DFA
+		/// </summary>
+		public bool IsDfa {
+			get {
+				// just check if any of our states have
+				// epsilon transitions
+				foreach(var fa in FillClosure())
+					if (0 != fa.EpsilonTransitions.Count)
+						return false;
+				return true;
+			}
 		}
 	}
 }

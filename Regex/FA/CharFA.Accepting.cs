@@ -14,6 +14,13 @@ namespace RE
 		public IList<CharFA<TAccept>> FillAcceptingStates(IList<CharFA<TAccept>> result = null)
 			=> FillAcceptingStates(FillClosure(), result);
 		/// <summary>
+		/// Retrieves all the accept symbols from this state machine.
+		/// </summary>
+		/// <param name="result">The list of accept symbols. Will be filled after the call.</param>
+		/// <returns>The resulting list of accept symbols. This is the same value as the result parameter, if specified.</returns>
+		public IList<TAccept> FillAcceptSymbols(IList<TAccept> result = null)
+			=> FillAcceptSymbols(FillClosure(), result);
+		/// <summary>
 		/// Retrieves all the states in this closure that are accepting
 		/// </summary>
 		/// <param name="closure">The closure to examine</param>
@@ -33,14 +40,44 @@ namespace RE
 			return result;
 		}
 		/// <summary>
+		/// Retrieves all the accept symbols states in this closure
+		/// </summary>
+		/// <param name="closure">The closure to examine</param>
+		/// <param name="result">The list of accept symbols. Will be filled after the call.</param>
+		/// <returns>The resulting list of accept symbols. This is the same value as the result parameter, if specified.</returns>
+		public static IList<TAccept> FillAcceptSymbols(IList<CharFA<TAccept>> closure, IList<TAccept> result = null)
+		{
+			if (null == result)
+				result = new List<TAccept>();
+			for (int ic = closure.Count, i = 0; i < ic; ++i)
+			{
+				var fa = closure[i];
+				if (fa.IsAccepting) 
+					if (!result.Contains(fa.AcceptSymbol))
+						result.Add(fa.AcceptSymbol);
+			}
+			return result;
+		}
+		/// <summary>
 		/// Returns the first state that accepts from a given FA, or null if none do.
 		/// </summary>
 		public CharFA<TAccept> FirstAcceptingState {
 			get {
-				foreach (var fa in FillClosure())
+				foreach (var fa in Closure)
 					if (fa.IsAccepting)
 						return fa;
 				return null;
+			}
+		}
+		/// <summary>
+		/// Returns the first accept symbol from a given FA, or the default value if none.
+		/// </summary>
+		public TAccept FirstAcceptSymbol {
+			get {
+				var fas = FirstAcceptingState;
+				if (null != fas)
+					return fas.AcceptSymbol;
+				return default(TAccept);
 			}
 		}
 		/// <summary>

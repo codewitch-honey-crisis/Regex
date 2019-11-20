@@ -24,6 +24,27 @@ namespace RE
 			return result;
 		}
 		/// <summary>
+		/// Retrieves an enumeration that indicates the closure of the state
+		/// </summary>
+		/// <remarks>This uses lazy evaluation.</remarks>
+		public IEnumerable<CharFA<TAccept>> Closure
+			=>_EnumClosure(new HashSet<CharFA<TAccept>>()); 
+		
+		// lazy closure implementation
+		IEnumerable<CharFA<TAccept>> _EnumClosure(HashSet<CharFA<TAccept>> visited)
+		{
+			if (visited.Add(this))
+			{
+				yield return this;
+				foreach (var trns in InputTransitions as IDictionary<CharFA<TAccept>, ICollection<char>>)
+					foreach (var fa in trns.Key._EnumClosure(visited))
+						yield return fa;
+				foreach (var fa in EpsilonTransitions)
+					foreach (var ffa in fa._EnumClosure(visited))
+						yield return ffa;
+			}
+		}
+		/// <summary>
 		/// Retrieves all states reachable from this state on no input.
 		/// </summary>
 		/// <param name="result">A collection to hold the result or null to create one</param>
@@ -38,6 +59,21 @@ namespace RE
 			foreach (var fa in EpsilonTransitions)
 				fa.FillEpsilonClosure(result);
 			return result;
+		}
+		/// <summary>
+		/// Retrieves an enumeration that indicates the epsilon closure of this state
+		/// </summary>
+		/// <remarks>This uses lazy evaluation.</remarks>
+		public IEnumerable<CharFA<TAccept>> EpsilonClosure
+			=> _EnumEpsilonClosure(new HashSet<CharFA<TAccept>>());
+		// lazy epsilon closure
+		IEnumerable<CharFA<TAccept>> _EnumEpsilonClosure(HashSet<CharFA<TAccept>> visited) {
+			if (visited.Add(this)) {
+				yield return this;
+				foreach (var fa in EpsilonTransitions)
+					foreach (var ffa in fa._EnumEpsilonClosure(visited))
+						yield return ffa;
+			}
 		}
 		/// <summary>
 		/// Takes a set of states and computes the total epsilon closure as a set of states
@@ -63,16 +99,23 @@ namespace RE
 		public static IList<CharFA<TAccept>> FillMove(IEnumerable<CharFA<TAccept>> states, char input, IList<CharFA<TAccept>> result = null)
 		{
 			if (null == result) result = new List<CharFA<TAccept>>();
-			foreach (var fa in FillEpsilonClosure(states))
+			var ec = FillEpsilonClosure(states);
+			for (int ic = ec.Count,i=0;i<ic;++i)
 			{
+				var fa = ec[i];
 				// examine each of the states reachable from this state on no input
-
 				CharFA<TAccept> ofa;
 				// see if this state has this input in its transitions
 				if (fa.InputTransitions.TryGetValue(input, out ofa))
-					foreach (var efa in ofa.FillEpsilonClosure())
+				{
+					var ec2 = ofa.FillEpsilonClosure();
+					for (int jc = ec2.Count, j = 0; j < jc; ++j)
+					{
+						var efa = ec2[i];
 						if (!result.Contains(efa)) // if it does, add it if it's not already there
 							result.Add(efa);
+					}
+				}
 			}
 			return result;
 		}
