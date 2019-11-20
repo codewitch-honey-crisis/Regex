@@ -6,12 +6,14 @@ namespace RegexDemo
 {
 	class Program
 	{
-		static void Main(string[] args) {
+		static void Main(string[] args)
+		{
 			_RunLexer();
 			_RunMatch();
 			_RunDom();
 		}
-		static void _RunCompiledLexCodeGen() {
+		static void _RunCompiledLexCodeGen()
+		{
 			// create our expressions
 			var digits = CharFA<string>.Repeat(
 				CharFA<string>.Set("0123456789"),
@@ -38,7 +40,7 @@ namespace RegexDemo
 			// add the symbol table field - in production we'll set the name
 			// to something more appropriate
 			var symtblField = new CodeMemberField(typeof(string[]), "LexSymbols");
-			symtblField.Attributes = MemberAttributes.Static |  MemberAttributes.Public;
+			symtblField.Attributes = MemberAttributes.Static | MemberAttributes.Public;
 			// generate the symbol table init code
 			symtblField.InitExpression = CharFA<string>.GenerateSymbolTableInitializer(symbolTable);
 			compClass.Members.Add(symtblField);
@@ -58,7 +60,8 @@ namespace RegexDemo
 			var prov = CodeDomProvider.CreateProvider("cs");
 			prov.GenerateCodeFromType(compClass, Console.Out, new CodeGeneratorOptions());
 		}
-		static void _RunDom() { 
+		static void _RunDom()
+		{
 			var test = "(ABC|DEF)*";
 			var dom = RegexExpression.Parse(test);
 			Console.WriteLine(dom.ToString());
@@ -67,7 +70,8 @@ namespace RegexDemo
 			Console.WriteLine(dom.ToString());
 			dom.ToFA("Accept");
 		}
-		static void _RunMatch() { 
+		static void _RunMatch()
+		{
 			var test = "foo123_ _bar";
 
 			var word = CharFA<string>.Repeat(
@@ -75,11 +79,11 @@ namespace RegexDemo
 				1, -1
 				, "Word");
 			var dfaWord = word.ToDfa();
-			var dfaTableWord = word.ToDfaStateTable(); 
+			var dfaTableWord = word.ToDfaStateTable();
 			RegexMatch match;
 			var pc = ParseContext.Create(test);
 			Console.WriteLine("Matching words with an NFA:");
-			while (null!=(match=word.Match(pc)))
+			while (null != (match = word.Match(pc)))
 				Console.WriteLine("Found match at {0}: {1}", match.Position, match.Value);
 			pc = ParseContext.Create(test);
 			Console.WriteLine("Matching words with a DFA:");
@@ -87,7 +91,11 @@ namespace RegexDemo
 				Console.WriteLine("Found match at {0}: {1}", match.Position, match.Value);
 			pc = ParseContext.Create(test);
 			Console.WriteLine("Matching words with a DFA state table:");
-			while (null != (match = CharFA<string>.MatchDfa(dfaTableWord,pc)))
+			while (null != (match = CharFA<string>.MatchDfa(dfaTableWord, pc)))
+				Console.WriteLine("Found match at {0}: {1}", match.Position, match.Value);
+			pc = ParseContext.Create(test);
+			Console.WriteLine("Matching words with a compiled DFA:");
+			while (null != (match = Match(pc)))
 				Console.WriteLine("Found match at {0}: {1}", match.Position, match.Value);
 
 		}
@@ -112,7 +120,7 @@ namespace RegexDemo
 			var lexerDfa = lexer.ToDfa();
 			lexerDfa.TrimDuplicates();
 			// we use a symbol table with the DFA state table to map ids back to strings
-			var symbolTable = new string[] { "Digits", "Word", "Whitespace","#ERROR" };
+			var symbolTable = new string[] { "Digits", "Word", "Whitespace", "#ERROR" };
 			// make sure to pass the symbol table if you're using one
 			var dfaTable = lexer.ToDfaStateTable(symbolTable);
 			var test = "foo123_ _bar";
@@ -127,7 +135,7 @@ namespace RegexDemo
 				// lex the next token
 				var acc = lexer.Lex(pc, "#ERROR");
 				// write the result
-				Console.WriteLine("{0}: {1}",acc, pc.GetCapture());
+				Console.WriteLine("{0}: {1}", acc, pc.GetCapture());
 			}
 			Console.WriteLine();
 			Console.WriteLine("Lex using the DFA");
@@ -227,7 +235,7 @@ namespace RegexDemo
 			var dom = RegexExpression.Parse("(ABC|DEF)+");
 			var fa = dom.ToFA("Accept");
 			fa.RenderToFile(@"..\..\..\ABCorDEFloop.jpg");
-			
+
 		}
 		internal static int Lex(RE.ParseContext context)
 		{
@@ -296,6 +304,60 @@ namespace RegexDemo
 			context.CaptureCurrent();
 			context.Advance();
 			return 3;
+		}
+		internal static RE.RegexMatch Match(RE.ParseContext context)
+		{
+			context.EnsureStarted();
+			int line = context.Line;
+			int column = context.Column;
+			long position = context.Position;
+			int l = context.CaptureBuffer.Length;
+			bool success = false;
+			for (//
+			; ((false == success)
+						&& (-1 != context.Current)); //
+			)
+			{
+				// q0
+				if ((((context.Current >= 'A')
+							&& (context.Current <= 'Z'))
+							|| ((context.Current >= 'a')
+							&& (context.Current <= 'z'))))
+				{
+					context.CaptureCurrent();
+					context.Advance();
+					goto q1;
+				}
+				goto error;
+			q1:
+				if ((((context.Current >= 'A')
+							&& (context.Current <= 'Z'))
+							|| ((context.Current >= 'a')
+							&& (context.Current <= 'z'))))
+				{
+					context.CaptureCurrent();
+					context.Advance();
+					goto q1;
+				}
+				success = true;
+				goto done;
+			error:
+				success = false;
+				context.Advance();
+			done:
+				if ((false == success))
+				{
+					line = context.Line;
+					column = context.Column;
+					position = context.Position;
+					l = context.CaptureBuffer.Length;
+				}
+			}
+			if (success)
+			{
+				return new RE.RegexMatch(line, column, position, context.GetCapture(l));
+			}
+			return null;
 		}
 	}
 }

@@ -30,12 +30,12 @@ namespace RE
 			// we also need to see if any states do not accept
 			// if they don't we'll have to generate an error condition
 			var hasError = false;
-			for (var i = 0;i<dfaTable.Length;i++)
+			for (var i = 0; i < dfaTable.Length; i++)
 			{
 				var trns = dfaTable[i].Transitions;
-				for (var j=0;j<trns.Length;j++)
+				for (var j = 0; j < trns.Length; j++)
 				{
-					if(0==trns[j].Destination)
+					if (0 == trns[j].Destination)
 					{
 						isRootLoop = true;
 						break;
@@ -47,13 +47,13 @@ namespace RE
 			var pccc = new CodeExpressionStatement(new CodeMethodInvokeExpression(new CodeMethodReferenceExpression(pcr, "CaptureCurrent")));
 			var exprs = new CodeExpressionCollection();
 			var stmts = new CodeStatementCollection();
-			
-			for (var i = 0;i<dfaTable.Length;i++)
+
+			for (var i = 0; i < dfaTable.Length; i++)
 			{
 				stmts.Clear();
 				var se = dfaTable[i];
 				var trns = se.Transitions;
-				for(var j = 0;j<trns.Length;j++)
+				for (var j = 0; j < trns.Length; j++)
 				{
 					var cif = new CodeConditionStatement();
 					stmts.Add(cif);
@@ -61,12 +61,12 @@ namespace RE
 
 					var trn = trns[j];
 					var pr = trn.PackedRanges;
-					for(var k =0;k<pr.Length; k++)
+					for (var k = 0; k < pr.Length; k++)
 					{
 						var first = pr[k];
 						++k; // advance an extra place
 						var last = pr[k];
-						if (first!=last)
+						if (first != last)
 						{
 							exprs.Add(
 								new CodeBinaryOperatorExpression(
@@ -101,7 +101,7 @@ namespace RE
 					cif.TrueStatements.Add(new CodeGotoStatement(string.Concat("q", trn.Destination.ToString())));
 
 				}
-				if(-1!=se.AcceptSymbolId) // is accepting
+				if (-1 != se.AcceptSymbolId) // is accepting
 					stmts.Add(new CodeMethodReturnStatement(new CodePrimitiveExpression(se.AcceptSymbolId)));
 				else
 				{
@@ -120,12 +120,166 @@ namespace RE
 					result.Statements.AddRange(stmts);
 				}
 			}
-			if(hasError)
+			if (hasError)
 			{
 				result.Statements.Add(new CodeLabeledStatement("error", pccc));
 				result.Statements.Add(new CodeExpressionStatement(new CodeMethodInvokeExpression(pcr, "Advance")));
 				result.Statements.Add(new CodeMethodReturnStatement(new CodePrimitiveExpression(errorSymbol)));
 			}
+			return result;
+		}
+		public static CodeMemberMethod GenerateMatchMethod(CharDfaEntry[] dfaTable)
+		{
+			var result = new CodeMemberMethod();
+			result.Name = "Match";
+			result.Attributes = MemberAttributes.FamilyAndAssembly | MemberAttributes.Static;
+			result.Parameters.Add(new CodeParameterDeclarationExpression(typeof(ParseContext), "context"));
+			result.ReturnType = new CodeTypeReference(typeof(RegexMatch));
+			result.Statements.Add(new CodeMethodInvokeExpression(new CodeMethodReferenceExpression(new CodeArgumentReferenceExpression("context"), "EnsureStarted")));
+			var pcr = new CodeArgumentReferenceExpression(result.Parameters[0].Name);
+			var pccr = new CodePropertyReferenceExpression(pcr, "Current");
+			var pccc = new CodeExpressionStatement(new CodeMethodInvokeExpression(new CodeMethodReferenceExpression(pcr, "CaptureCurrent")));
+			var vsuc = new CodeVariableReferenceExpression("success");
+			result.Statements.Add(new CodeVariableDeclarationStatement(typeof(int), "line", new CodePropertyReferenceExpression(pcr, "Line")));
+			result.Statements.Add(new CodeVariableDeclarationStatement(typeof(int), "column", new CodePropertyReferenceExpression(pcr, "Column")));
+			result.Statements.Add(new CodeVariableDeclarationStatement(typeof(long), "position", new CodePropertyReferenceExpression(pcr, "Position")));
+			result.Statements.Add(new CodeVariableDeclarationStatement(typeof(int), "l", new CodePropertyReferenceExpression(new CodePropertyReferenceExpression(pcr, "CaptureBuffer"), "Length")));
+			result.Statements.Add(new CodeVariableDeclarationStatement(typeof(bool), "success", new CodePrimitiveExpression(false)));
+			var w = new CodeIterationStatement(
+				new CodeCommentStatement(""),
+				new CodeBinaryOperatorExpression(
+					new CodeBinaryOperatorExpression(
+						new CodePrimitiveExpression(false),
+						CodeBinaryOperatorType.ValueEquality,
+						vsuc),
+				CodeBinaryOperatorType.BooleanAnd,
+				new CodeBinaryOperatorExpression(
+					new CodePrimitiveExpression(-1),
+					CodeBinaryOperatorType.IdentityInequality,
+					pccr)),
+				new CodeCommentStatement(""));
+			result.Statements.Add(w);
+			// we generate labels for each state except maybe the first.
+			// we only generate a label for the first state if any of the
+			// states (including itself) reference it. This is to prevent
+			// a compiler warning in the case of an unreferenced label
+			var isRootLoop = false;
+			// we also need to see if any states do not accept
+			// if they don't we'll have to generate an error condition
+			var hasError = false;
+			for (var i = 0; i < dfaTable.Length; i++)
+			{
+				var trns = dfaTable[i].Transitions;
+				for (var j = 0; j < trns.Length; j++)
+				{
+					if (0 == trns[j].Destination)
+					{
+						isRootLoop = true;
+						break;
+					}
+				}
+			}
+			var exprs = new CodeExpressionCollection();
+			var stmts = new CodeStatementCollection();
+
+			for (var i = 0; i < dfaTable.Length; i++)
+			{
+				stmts.Clear();
+				var se = dfaTable[i];
+				var trns = se.Transitions;
+				for (var j = 0; j < trns.Length; j++)
+				{
+					var cif = new CodeConditionStatement();
+					stmts.Add(cif);
+					exprs.Clear();
+
+					var trn = trns[j];
+					var pr = trn.PackedRanges;
+					for (var k = 0; k < pr.Length; k++)
+					{
+						var first = pr[k];
+						++k; // advance an extra place
+						var last = pr[k];
+						if (first != last)
+						{
+							exprs.Add(
+								new CodeBinaryOperatorExpression(
+									new CodeBinaryOperatorExpression(
+										pccr,
+										CodeBinaryOperatorType.GreaterThanOrEqual,
+										new CodePrimitiveExpression(first)
+										),
+									CodeBinaryOperatorType.BooleanAnd,
+									new CodeBinaryOperatorExpression(
+										pccr,
+										CodeBinaryOperatorType.LessThanOrEqual,
+										new CodePrimitiveExpression(last)
+										)
+									)
+								);
+						}
+						else
+						{
+							exprs.Add(
+								new CodeBinaryOperatorExpression(
+									pccr,
+									CodeBinaryOperatorType.ValueEquality,
+									new CodePrimitiveExpression(first)
+									)
+								);
+						}
+					}
+					cif.Condition = _MakeBinOps(exprs, CodeBinaryOperatorType.BooleanOr);
+					cif.TrueStatements.Add(pccc);
+					cif.TrueStatements.Add(new CodeExpressionStatement(new CodeMethodInvokeExpression(pcr, "Advance")));
+					cif.TrueStatements.Add(new CodeGotoStatement(string.Concat("q", trn.Destination.ToString())));
+
+				}
+				if (-1 != se.AcceptSymbolId) // is accepting
+				{
+					stmts.Add(new CodeAssignStatement(vsuc, new CodePrimitiveExpression(true)));
+					stmts.Add(new CodeGotoStatement("done"));
+				}
+				else
+				{
+					hasError = true;
+					stmts.Add(new CodeGotoStatement("error"));
+				}
+				if (0 < i || isRootLoop)
+				{
+					w.Statements.Add(new CodeLabeledStatement(string.Concat("q", i.ToString()), stmts[0]));
+					for (int jc = stmts.Count, j = 1; j < jc; ++j)
+						w.Statements.Add(stmts[j]);
+				}
+				else
+				{
+					w.Statements.Add(new CodeCommentStatement("q0"));
+					w.Statements.AddRange(stmts);
+				}
+			}
+			if (hasError)
+			{
+				w.Statements.Add(new CodeLabeledStatement("error", new CodeAssignStatement(vsuc, new CodePrimitiveExpression(false))));
+				w.Statements.Add(new CodeExpressionStatement(new CodeMethodInvokeExpression(pcr, "Advance")));
+			}
+			var ccif = new CodeConditionStatement(new CodeBinaryOperatorExpression(new CodePrimitiveExpression(false), CodeBinaryOperatorType.ValueEquality, vsuc));
+			ccif.TrueStatements.Add(new CodeAssignStatement(new CodeVariableReferenceExpression("line"), new CodePropertyReferenceExpression(pcr, "Line")));
+			ccif.TrueStatements.Add(new CodeAssignStatement(new CodeVariableReferenceExpression("column"), new CodePropertyReferenceExpression(pcr, "Column")));
+			ccif.TrueStatements.Add(new CodeAssignStatement(new CodeVariableReferenceExpression("position"), new CodePropertyReferenceExpression(pcr, "Position")));
+			ccif.TrueStatements.Add(new CodeAssignStatement(new CodeVariableReferenceExpression("l"), new CodePropertyReferenceExpression(new CodePropertyReferenceExpression(pcr, "CaptureBuffer"), "Length")));
+			w.Statements.Add(new CodeLabeledStatement("done", ccif));
+			var cccif = new CodeConditionStatement(vsuc);
+			cccif.TrueStatements.Add(
+				new CodeMethodReturnStatement(
+					new CodeObjectCreateExpression(
+						typeof(RegexMatch),
+						new CodeVariableReferenceExpression("line"),
+						new CodeVariableReferenceExpression("column"),
+						new CodeVariableReferenceExpression("position"),
+						new CodeMethodInvokeExpression(pcr, "GetCapture", new CodeVariableReferenceExpression("l"))
+						)));
+			result.Statements.Add(cccif);
+			result.Statements.Add(new CodeMethodReturnStatement(new CodePrimitiveExpression(null)));
 			return result;
 		}
 		static CodeExpression _MakeBinOps(IEnumerable exprs, CodeBinaryOperatorType type)
