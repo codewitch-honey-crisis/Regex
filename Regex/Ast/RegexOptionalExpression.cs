@@ -4,6 +4,9 @@ using System.Text;
 
 namespace RE
 {
+	/// <summary>
+	/// Represents an optional expression, as indicated by ?
+	/// </summary>
 	public class RegexOptionalExpression : RegexUnaryExpression, IEquatable<RegexOptionalExpression>
 	{
 		/// <summary>
@@ -11,6 +14,10 @@ namespace RE
 		/// </summary>
 		/// <remarks>If false, this statement will be wrapped in parentheses if necessary</remarks>
 		public override bool IsSingleElement => true;
+		/// <summary>
+		/// Creates an optional expression using the specified target expression
+		/// </summary>
+		/// <param name="expression">The target expression to make optional</param>
 		public RegexOptionalExpression(RegexExpression expression) { Expression = expression; }
 		/// <summary>
 		/// Creates a default instance of the expression
@@ -29,20 +36,20 @@ namespace RE
 		/// </summary>
 		/// <param name="sb">The string builder to use</param>
 		/// <remarks>Used by ToString()</remarks>
-		protected internal override void AppendTo(StringBuilder builder)
+		protected internal override void AppendTo(StringBuilder sb)
 		{
 			if (null == Expression)
-				builder.Append("()?");
+				sb.Append("()?");
 			else
 			{
 				var ise = Expression.IsSingleElement;
 				if (!ise)
-					builder.Append('(');
-				Expression.AppendTo(builder);
+					sb.Append('(');
+				Expression.AppendTo(sb);
 				if (!ise)
-					builder.Append(")?");
+					sb.Append(")?");
 				else
-					builder.Append('?');
+					sb.Append('?');
 			}
 		}
 		/// <summary>

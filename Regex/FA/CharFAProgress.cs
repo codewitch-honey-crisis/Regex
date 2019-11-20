@@ -9,8 +9,17 @@ namespace RE
 	/// </summary>
 	public enum CharFAStatus
 	{
+		/// <summary>
+		/// The status is unknown
+		/// </summary>
 		Unknown,
+		/// <summary>
+		/// Performing a DFA transform
+		/// </summary>
 		DfaTransform,
+		/// <summary>
+		/// Trimming duplicate states
+		/// </summary>
 		TrimDuplicates
 	}
 	/// <summary>

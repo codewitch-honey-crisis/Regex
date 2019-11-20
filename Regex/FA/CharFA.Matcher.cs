@@ -64,9 +64,9 @@
 		/// <summary>
 		/// Pattern matches through a string of text using a DFA
 		/// </summary>
+		/// <param name="dfaTable">The DFA state table to use</param>
 		/// <param name="context">The parse context to search</param>
 		/// <returns>A <see cref="CharFAMatch"/> that contains the match information, or null if the match is not found.</returns>
-		/// <remarks>An NFA will not work with this method, but for performance reasons we cannot verify that the state machine is a DFA before running. Be sure to only use DFAs with this method.</remarks>
 		public static CharFAMatch MatchDfa(CharDfaEntry[] dfaTable, ParseContext context)
 		{
 			context.EnsureStarted();

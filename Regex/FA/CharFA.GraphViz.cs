@@ -298,6 +298,7 @@ namespace RE
 		/// Renders Graphviz output for this machine to a stream
 		/// </summary>
 		/// <param name="format">The output format. The format to render can be any supported dot output format. See dot command line documation for details.</param>
+		/// <param name="copy">True to copy the stream, otherwise false</param>
 		/// <param name="options">A <see cref="DotGraphOptions"/> instance with any options, or null to use the defaults</param>
 		/// <returns>A stream containing the output. The caller is expected to close the stream when finished.</returns>
 		public Stream RenderToStream(string format, bool copy = false, DotGraphOptions options = null)
@@ -332,7 +333,7 @@ namespace RE
 				}
 			}
 		}
-		public static void _AppendRangeTo(StringBuilder builder, CharRange range)
+		static void _AppendRangeTo(StringBuilder builder, CharRange range)
 		{
 			_AppendRangeCharTo(builder, range.First);
 			if (0 == range.Last.CompareTo(range.First)) return;

@@ -5,6 +5,9 @@ using System.Text;
 
 namespace RE
 {
+	/// <summary>
+	/// Represents the common functionality of all regular expression elements
+	/// </summary>
 	public abstract class RegexExpression : ICloneable {
 		/// <summary>
 		/// Indicates the 1 based line on which the regular expression was found
@@ -60,7 +63,7 @@ namespace RE
 		/// </summary>
 		/// <param name="sb">The string builder to use</param>
 		/// <remarks>Used by ToString()</remarks>
-		protected internal abstract void AppendTo(StringBuilder builder);
+		protected internal abstract void AppendTo(StringBuilder sb);
 		/// <summary>
 		/// Gets a textual representation of the expression
 		/// </summary>
@@ -75,7 +78,6 @@ namespace RE
 		/// Parses a regular expresion from the specified string
 		/// </summary>
 		/// <param name="string">The string</param>
-		/// <param name="accepting">The symbol reported when accepting the specified expression</param>
 		/// <returns>A new abstract syntax tree representing the expression</returns>
 		public static RegexExpression Parse(IEnumerable<char> @string) 
 			=> Parse(ParseContext.Create(@string));
@@ -83,7 +85,6 @@ namespace RE
 		/// Parses a regular expresion from the specified <see cref="TextReader"/>
 		/// </summary>
 		/// <param name="reader">The text reader</param>
-		/// <param name="accepting">The symbol reported when accepting the specified expression</param>
 		/// <returns>A new abstract syntax tree representing the expression</returns>
 		public static RegexExpression ReadFrom(TextReader reader)
 			=> Parse(ParseContext.CreateFrom(reader));

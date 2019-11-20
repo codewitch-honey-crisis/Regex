@@ -4,6 +4,9 @@ using System.Text;
 
 namespace RE
 {
+	/// <summary>
+	/// Represents a concatenation between two expression. This has no operator as it is implicit.
+	/// </summary>
 	public class RegexConcatExpression : RegexBinaryExpression, IEquatable<RegexConcatExpression>
 	{
 		/// <summary>

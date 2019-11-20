@@ -4,6 +4,9 @@ using System.Text;
 
 namespace RE
 {
+	/// <summary>
+	/// Represents a single character literal
+	/// </summary>
 	public class RegexLiteralExpression : RegexExpression, IEquatable<RegexLiteralExpression>
 	{
 		/// <summary>
@@ -15,6 +18,11 @@ namespace RE
 		/// Indicates the character literal of this expression
 		/// </summary>
 		public char Value { get; set; } = default(char);
+		/// <summary>
+		/// Creates a series of concatenated literals representing the specified string
+		/// </summary>
+		/// <param name="value">The string to use</param>
+		/// <returns>An expression representing <paramref name="value"/></returns>
 		public static RegexExpression CreateString(string value)
 		{
 			if (string.IsNullOrEmpty(value))
@@ -24,6 +32,10 @@ namespace RE
 				result = new RegexConcatExpression(result, new RegexLiteralExpression(value[i]));
 			return result;
 		}
+		/// <summary>
+		/// Creates a literal expression with the specified character
+		/// </summary>
+		/// <param name="value">The character to represent</param>
 		public RegexLiteralExpression(char value) { Value = value; }
 		/// <summary>
 		/// Creates a default instance of the expression
@@ -42,8 +54,8 @@ namespace RE
 		/// </summary>
 		/// <param name="sb">The string builder to use</param>
 		/// <remarks>Used by ToString()</remarks>
-		protected internal override void AppendTo(StringBuilder builder)
-			=>AppendEscapedChar(Value,builder);
+		protected internal override void AppendTo(StringBuilder sb)
+			=>AppendEscapedChar(Value,sb);
 		/// <summary>
 		/// Creates a new copy of this expression
 		/// </summary>

@@ -4,6 +4,9 @@ using System.Text;
 
 namespace RE
 {
+	/// <summary>
+	/// Represents a repeat regular expression as indicated by *, +, or {min,max}
+	/// </summary>
 	public class RegexRepeatExpression : RegexUnaryExpression, IEquatable<RegexRepeatExpression>
 	{
 		/// <summary>
@@ -11,6 +14,12 @@ namespace RE
 		/// </summary>
 		/// <remarks>If false, this statement will be wrapped in parentheses if necessary</remarks>
 		public override bool IsSingleElement => true;
+		/// <summary>
+		/// Creates a repeat expression with the specifed target expression, and minimum and maximum occurances
+		/// </summary>
+		/// <param name="expression">The target expression</param>
+		/// <param name="minOccurs">The minimum number of times the target expression can occur or -1</param>
+		/// <param name="maxOccurs">The maximum number of times the target expression can occur or -1</param>
 		public RegexRepeatExpression(RegexExpression expression,int minOccurs=-1,int maxOccurs=-1)
 		{
 			Expression = expression;

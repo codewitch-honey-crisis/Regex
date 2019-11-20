@@ -66,6 +66,7 @@ namespace RE
 		/// Trims duplicate states from the graph
 		/// </summary>
 		/// <param name="closure">The closure to alter.</param>
+		/// <param name="progress">The progress object used to report the progress of the task</param>
 		public static void TrimDuplicates(IList<CharFA<TAccept>> closure, IProgress<CharFAProgress> progress = null)
 		{
 			var lclosure = closure;

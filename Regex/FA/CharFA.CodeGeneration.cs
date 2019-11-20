@@ -14,7 +14,7 @@ namespace RE
 		/// Generates a <see cref="CodeExpression"/> that can be used to initialize a symbol table
 		/// </summary>
 		/// <param name="symbols">The symbols to generate the symbol table code for</param>
-		/// <returns>The expression used to initialize the symbol table array of element type <see cref="TAccept"/></returns>
+		/// <returns>The expression used to initialize the symbol table array of element type indicated by TAccept</returns>
 		public static CodeExpression GenerateSymbolTableInitializer(params TAccept[] symbols)
 			=> _Serialize(symbols);
 		/// <summary>

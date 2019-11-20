@@ -75,7 +75,27 @@ namespace RE
 			NormalizeRangeList(rl);
 			var result = new char[rl.Count * 2];
 			int j = 0;
-			for (int i = 0; i < result.Length; i++)
+			for (var i = 0; i < result.Length; i++)
+			{
+				result[i] = rl[j].First;
+				++i;
+				result[i] = rl[j].Last;
+				++j;
+			}
+			return result;
+		}
+		/// <summary>
+		/// Returns an array of int pairs representing the ranges
+		/// </summary>
+		/// <param name="ranges">The ranges to pack</param>
+		/// <returns>A packed array of ranges</returns>
+		public static int[] ToPackedInts(IEnumerable<CharRange> ranges)
+		{
+			var rl = new List<CharRange>(ranges);
+			NormalizeRangeList(rl);
+			var result = new int[rl.Count * 2];
+			int j = 0;
+			for (var i = 0; i < result.Length; i++)
 			{
 				result[i] = rl[j].First;
 				++i;
@@ -330,7 +350,19 @@ namespace RE
 		}
 		#endregion
 		// C# value semantics overloads
+		/// <summary>
+		/// Indicates whether or not two character ranges are the same
+		/// </summary>
+		/// <param name="lhs">The left hand range to compare</param>
+		/// <param name="rhs">The right hand range to compare</param>
+		/// <returns>True if the ranges are the same, otherwise false</returns>
 		public static bool operator ==(CharRange lhs, CharRange rhs) => lhs.Equals(rhs);
+		/// <summary>
+		/// Indicates whether or not two character ranges are different
+		/// </summary>
+		/// <param name="lhs">The left hand range to compare</param>
+		/// <param name="rhs">The right hand range to compare</param>
+		/// <returns>True if the ranges are different, otherwise false</returns>
 		public static bool operator !=(CharRange lhs, CharRange rhs) => !lhs.Equals(rhs);
 
 	}

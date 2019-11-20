@@ -121,7 +121,7 @@ namespace RE
 		#endregion
 	}
 	/// <summary>
-	/// Indicates a single character charset entry
+	/// Represents a single character charset entry
 	/// </summary>
 	public class RegexCharsetCharEntry : RegexCharsetEntry,IEquatable<RegexCharsetCharEntry>
 	{
@@ -215,6 +215,9 @@ namespace RE
 		}
 		#endregion
 	}
+	/// <summary>
+	/// Represents a character set range entry
+	/// </summary>
 	public class RegexCharsetRangeEntry : RegexCharsetEntry
 	{
 		/// <summary>

@@ -165,10 +165,10 @@ namespace RE
 			return -1;
 		}
 		/// <summary>
-		/// Returns a <see cref="IDictionary{FA,IList{CharRange}}"/>, keyed by state, that contains all of the outgoing local input transitions, expressed as a series of ranges
+		/// Returns a dictionary keyed by state, that contains all of the outgoing local input transitions, expressed as a series of ranges
 		/// </summary>
-		/// <param name="result">The <see cref="IDictionary{FA,IList{CharRange}}"/> to fill, or null to create one.</param>
-		/// <returns>A <see cref="IDictionary{FA,IList{CharRange}}"/> containing the result of the query</returns>
+		/// <param name="result">The dictionary to fill, or null to create one.</param>
+		/// <returns>A dictionary containing the result of the query</returns>
 		public IDictionary<CharFA<TAccept>, IList<CharRange>> FillInputTransitionRangesGroupedByState(IDictionary<CharFA<TAccept>, IList<CharRange>> result = null)
 		{
 			if (null == result)

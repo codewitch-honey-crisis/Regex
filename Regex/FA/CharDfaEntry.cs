@@ -80,6 +80,9 @@ namespace RE
 			return base.ConvertTo(context, culture, value, destinationType);
 		}
 	}
+	/// <summary>
+	/// Indicates a transition entry in the DFA state table
+	/// </summary>
 	[TypeConverter(typeof(CharDfaTransitionEntryConverter))]
 	public struct CharDfaTransitionEntry
 	{

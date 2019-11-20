@@ -4,6 +4,9 @@ using System.Text;
 
 namespace RE
 {
+	/// <summary>
+	/// Represents an "or" regular expression as indicated by |
+	/// </summary>
 	public class RegexOrExpression : RegexBinaryExpression, IEquatable<RegexOrExpression>
 	{
 		/// <summary>
