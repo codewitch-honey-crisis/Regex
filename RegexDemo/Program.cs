@@ -7,7 +7,9 @@ namespace RegexDemo
 	class Program
 	{
 		static void Main(string[] args) {
-			_RunCompiledLexCodeGen();
+			_RunLexer();
+			_RunMatch();
+			_RunDom();
 		}
 		static void _RunCompiledLexCodeGen() {
 			// create our expressions
