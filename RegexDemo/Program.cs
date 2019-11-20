@@ -8,6 +8,7 @@ namespace RegexDemo
 	{
 		static void Main(string[] args)
 		{
+			// _BuildArticleImages()
 			_RunLexer();
 			_RunMatch();
 			_RunDom();
