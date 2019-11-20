@@ -112,6 +112,13 @@ namespace RE
 				state = newState;
 			}
 		}
+		/// <summary>
+		/// Lexes the next input from the parse context.
+		/// </summary>
+		/// <param name="dfaTable">The DFA state table to use</param>
+		/// <param name="context">The <see cref="ParseContext"/> to use.</param>
+		/// <param name="errorSymbol">The symbol id to report in the case of an error</param>
+		/// <returns>The next symbol id matched - <paramref name="context"/> contains the capture and line information</returns>
 		public static int LexDfa(CharDfaEntry[] dfaTable, ParseContext context, int errorSymbol = -1)
 		{
 			// track our current state

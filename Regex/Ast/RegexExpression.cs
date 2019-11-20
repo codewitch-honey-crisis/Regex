@@ -6,24 +6,65 @@ using System.Text;
 namespace RE
 {
 	public abstract class RegexExpression : ICloneable {
+		/// <summary>
+		/// Indicates the 1 based line on which the regular expression was found
+		/// </summary>
 		public int Line { get; set; } = 1;
+		/// <summary>
+		/// Indicates the 1 based column on which the regular expression was found
+		/// </summary>
 		public int Column { get; set; } = 1;
+		/// <summary>
+		/// Indicates the 0 based position on which the regular expression was found
+		/// </summary>
 		public long Position { get; set; } = 0L;
-
+		/// <summary>
+		/// Indicates whether or not this statement is a single element or not
+		/// </summary>
+		/// <remarks>If false, this statement will be wrapped in parentheses if necessary</remarks>
 		public abstract bool IsSingleElement { get; }
+		/// <summary>
+		/// Sets the location information for the expression
+		/// </summary>
+		/// <param name="line">The 1 based line where the expression appears</param>
+		/// <param name="column">The 1 based column where the expression appears</param>
+		/// <param name="position">The 0 based position where the expression appears</param>
 		public void SetLocation(int line, int column, long position)
 		{
 			Line = line;
 			Column = column;
 			Position = position;
 		}
+		/// <summary>
+		/// Creates a copy of the expression
+		/// </summary>
+		/// <returns>A copy of the expression</returns>
 		protected abstract RegexExpression CloneImpl();
 		object ICloneable.Clone() => CloneImpl();
-
+		/// <summary>
+		/// Creates a state machine representing this expression
+		/// </summary>
+		/// <typeparam name="TAccept">The type of accept symbol to use for this expression</typeparam>
+		/// <returns>A new <see cref="CharFA{TAccept}"/> finite state machine representing this expression</returns>
 		public CharFA<TAccept> ToFA<TAccept>()
 			=> ToFA(default(TAccept));
+		/// <summary>
+		/// Creates a state machine representing this expression
+		/// </summary>
+		/// <typeparam name="TAccept">The type of accept symbol to use for this expression</typeparam>
+		/// <param name="accept">The accept symbol to use for this expression</param>
+		/// <returns>A new <see cref="CharFA{TAccept}"/> finite state machine representing this expression</returns>
 		public abstract CharFA<TAccept> ToFA<TAccept>(TAccept accept);
+		/// <summary>
+		/// Appends the textual representation to a <see cref="StringBuilder"/>
+		/// </summary>
+		/// <param name="sb">The string builder to use</param>
+		/// <remarks>Used by ToString()</remarks>
 		protected internal abstract void AppendTo(StringBuilder builder);
+		/// <summary>
+		/// Gets a textual representation of the expression
+		/// </summary>
+		/// <returns>A string representing the expression</returns>
 		public override string ToString()
 		{
 			var result = new StringBuilder();
@@ -35,7 +76,7 @@ namespace RE
 		/// </summary>
 		/// <param name="string">The string</param>
 		/// <param name="accepting">The symbol reported when accepting the specified expression</param>
-		/// <returns>A new expression that represents the regular expression</returns>
+		/// <returns>A new abstract syntax tree representing the expression</returns>
 		public static RegexExpression Parse(IEnumerable<char> @string) 
 			=> Parse(ParseContext.Create(@string));
 		/// <summary>
@@ -43,10 +84,15 @@ namespace RE
 		/// </summary>
 		/// <param name="reader">The text reader</param>
 		/// <param name="accepting">The symbol reported when accepting the specified expression</param>
-		/// <returns>A new expression that represents the regular expression</returns>
+		/// <returns>A new abstract syntax tree representing the expression</returns>
 		public static RegexExpression ReadFrom(TextReader reader)
 			=> Parse(ParseContext.CreateFrom(reader));
-		internal static RegexExpression Parse(ParseContext pc)
+		/// <summary>
+		/// Parses a regular expression from the specified <see cref="ParseContext"/>
+		/// </summary>
+		/// <param name="pc">The parse context to use</param>
+		/// <returns>A new abstract syntax tree representing the expression</returns>
+		public static RegexExpression Parse(ParseContext pc)
 		{
 			RegexExpression result=null,next=null;
 			int ich;
@@ -435,6 +481,11 @@ namespace RE
 			}
 			return expr;
 		}
+		/// <summary>
+		/// Appends a character escape to the specified <see cref="StringBuilder"/>
+		/// </summary>
+		/// <param name="ch">The character to escape</param>
+		/// <param name="builder">The string builder to append to</param>
 		internal static void AppendEscapedChar(char ch,StringBuilder builder)
 		{
 			switch (ch)
@@ -498,6 +549,11 @@ namespace RE
 			}
 
 		}
+		/// <summary>
+		/// Escapes the specified character
+		/// </summary>
+		/// <param name="ch">The character to escape</param>
+		/// <returns>A string representing the escaped character</returns>
 		internal static string EscapeChar(char ch)
 		{
 			switch (ch)
@@ -548,6 +604,11 @@ namespace RE
 						return string.Concat(ch);
 			}
 		}
+		/// <summary>
+		/// Appends an escaped range character to the specified <see cref="StringBuilder"/>
+		/// </summary>
+		/// <param name="rangeChar">The range character to escape</param>
+		/// <param name="builder">The string builder to append to</param>
 		internal static void AppendEscapedRangeChar(char rangeChar,StringBuilder builder)
 		{
 			switch (rangeChar)
@@ -611,6 +672,11 @@ namespace RE
 					break;
 			}
 		}
+		/// <summary>
+		/// Escapes a range character
+		/// </summary>
+		/// <param name="ch">The character to escape</param>
+		/// <returns>A string containing the escaped character</returns>
 		internal static string EscapeRangeChar(char ch)
 		{
 			switch (ch)
@@ -931,5 +997,4 @@ namespace RE
 			}
 		}
 	}
-	
 }

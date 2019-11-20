@@ -11,8 +11,12 @@ namespace RE
 	partial class CharFA<TAccept>
 	{
 		static IDictionary<string, IList<CharRange>> _charClasses = _GetCharacterClasses();
+		/// <summary>
+		/// Retrieves a dictionary indicating the character classes supported by this library
+		/// </summary>
 		public static IDictionary<string, IList<CharRange>> CharacterClasses
 					=> _charClasses;
+		// build the character classes
 		static IDictionary<string, IList<CharRange>> _GetCharacterClasses()
 		{
 			var result = new Dictionary<string, IList<CharRange>>();

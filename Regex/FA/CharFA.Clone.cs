@@ -6,6 +6,10 @@ namespace RE
 {
 	partial class CharFA<TAccept> : ICloneable
 	{
+		/// <summary>
+		/// Deep copies the finite state machine to a new state machine
+		/// </summary>
+		/// <returns>The new machine</returns>
 		public CharFA<TAccept> Clone()
 		{
 			var closure = FillClosure();

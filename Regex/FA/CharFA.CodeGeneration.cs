@@ -10,10 +10,26 @@ namespace RE
 {
 	partial class CharFA<TAccept>
 	{
+		/// <summary>
+		/// Generates a <see cref="CodeExpression"/> that can be used to initialize a symbol table
+		/// </summary>
+		/// <param name="symbols">The symbols to generate the symbol table code for</param>
+		/// <returns>The expression used to initialize the symbol table array of element type <see cref="TAccept"/></returns>
 		public static CodeExpression GenerateSymbolTableInitializer(params TAccept[] symbols)
 			=> _Serialize(symbols);
+		/// <summary>
+		/// Generates a <see cref="CodeExpression"/> that can be used to initialize a DFA state table
+		/// </summary>
+		/// <param name="dfaTable">The DFA state table to generate the code for</param>
+		/// <returns>The expression used to initialize the DFA state table array of element type <see cref="CharDfaEntry"/></returns>
 		public static CodeExpression GenerateDfaStateTableInitializer(CharDfaEntry[] dfaTable)
 			=> _Serialize(dfaTable);
+		/// <summary>
+		/// Generates a <see cref="CodeMemberMethod"/> that can be compiled and used to lex input
+		/// </summary>
+		/// <param name="dfaTable">The DFA table to use</param>
+		/// <param name="errorSymbol">Indicates the error symbol id to use</param>
+		/// <returns>A <see cref="CodeMemberMethod"/> representing the lexing procedure</returns>
 		public static CodeMemberMethod GenerateLexMethod(CharDfaEntry[] dfaTable, int errorSymbol)
 		{
 			var result = new CodeMemberMethod();
@@ -128,6 +144,11 @@ namespace RE
 			}
 			return result;
 		}
+		/// <summary>
+		/// Generates a <see cref="CodeMemberMethod"/> that can be compiled and used to match input
+		/// </summary>
+		/// <param name="dfaTable">The DFA table to use</param>
+		/// <returns>A <see cref="CodeMemberMethod"/> representing the matching procedure</returns>
 		public static CodeMemberMethod GenerateMatchMethod(CharDfaEntry[] dfaTable)
 		{
 			var result = new CodeMemberMethod();

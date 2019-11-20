@@ -92,6 +92,12 @@ namespace RE
 					return true;
 			return false;
 		}
+		/// <summary>
+		/// Retrieves the first accept symbol from the collection of states
+		/// </summary>
+		/// <param name="states">The states to examine</param>
+		/// <param name="result">The accept symbol, if the method returned true</param>
+		/// <returns>True if an accept symbol was found, otherwise false</returns>
 		public static bool TryGetAnyAcceptSymbol(IEnumerable<CharFA<TAccept>> states, out TAccept result)
 		{
 			foreach (var fa in states)
