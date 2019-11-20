@@ -111,7 +111,7 @@ namespace RE
 					var ec2 = ofa.FillEpsilonClosure();
 					for (int jc = ec2.Count, j = 0; j < jc; ++j)
 					{
-						var efa = ec2[i];
+						var efa = ec2[j];
 						if (!result.Contains(efa)) // if it does, add it if it's not already there
 							result.Add(efa);
 					}
