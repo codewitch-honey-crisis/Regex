@@ -370,6 +370,11 @@
             <param name="rhs">The right hand expression to compare</param>
             <returns>True if the expressions are different, otherwise false</returns>
         </member>
+        <member name="T:RE.RegexConcatExpression">
+            <summary>
+            Represents a concatenation between two expression. This has no operator as it is implicit.
+            </summary>
+        </member>
         <member name="P:RE.RegexConcatExpression.IsSingleElement">
             <summary>
             Indicates whether or not this statement is a single element or not
@@ -450,6 +455,11 @@
             </summary>
             <param name="sb">The string builder to use</param>
             <remarks>Used by ToString()</remarks>
+        </member>
+        <member name="T:RE.RegexExpression">
+            <summary>
+            Represents the common functionality of all regular expression elements
+            </summary>
         </member>
         <member name="P:RE.RegexExpression.Line">
             <summary>
@@ -579,6 +589,19 @@
             Indicates the character literal of this expression
             </summary>
         </member>
+        <member name="M:RE.RegexLiteralExpression.CreateString(System.String)">
+            <summary>
+            Creates a series of concatenated literals representing the specified string
+            </summary>
+            <param name="value">The string to use</param>
+            <returns>An expression representing <paramref name="value"/></returns>
+        </member>
+        <member name="M:RE.RegexLiteralExpression.#ctor(System.Char)">
+            <summary>
+            Creates a literal expression with the specified character
+            </summary>
+            <param name="value">The character to represent</param>
+        </member>
         <member name="M:RE.RegexLiteralExpression.#ctor">
             <summary>
             Creates a default instance of the expression
@@ -647,11 +670,22 @@
             <param name="rhs">The right hand expression to compare</param>
             <returns>True if the expressions are different, otherwise false</returns>
         </member>
+        <member name="T:RE.RegexOptionalExpression">
+            <summary>
+            Represents an optional expression, as indicated by ?
+            </summary>
+        </member>
         <member name="P:RE.RegexOptionalExpression.IsSingleElement">
             <summary>
             Indicates whether or not this statement is a single element or not
             </summary>
             <remarks>If false, this statement will be wrapped in parentheses if necessary</remarks>
+        </member>
+        <member name="M:RE.RegexOptionalExpression.#ctor(RE.RegexExpression)">
+            <summary>
+            Creates an optional expression using the specified target expression
+            </summary>
+            <param name="expression">The target expression to make optional</param>
         </member>
         <member name="M:RE.RegexOptionalExpression.#ctor">
             <summary>
@@ -720,6 +754,11 @@
             <param name="lhs">The left hand expression to compare</param>
             <param name="rhs">The right hand expression to compare</param>
             <returns>True if the expressions are different, otherwise false</returns>
+        </member>
+        <member name="T:RE.RegexOrExpression">
+            <summary>
+            Represents an "or" regular expression as indicated by |
+            </summary>
         </member>
         <member name="P:RE.RegexOrExpression.IsSingleElement">
             <summary>
@@ -802,11 +841,24 @@
             <param name="rhs">The right hand expression to compare</param>
             <returns>True if the expressions are different, otherwise false</returns>
         </member>
+        <member name="T:RE.RegexRepeatExpression">
+            <summary>
+            Represents a repeat regular expression as indicated by *, +, or {min,max}
+            </summary>
+        </member>
         <member name="P:RE.RegexRepeatExpression.IsSingleElement">
             <summary>
             Indicates whether or not this statement is a single element or not
             </summary>
             <remarks>If false, this statement will be wrapped in parentheses if necessary</remarks>
+        </member>
+        <member name="M:RE.RegexRepeatExpression.#ctor(RE.RegexExpression,System.Int32,System.Int32)">
+            <summary>
+            Creates a repeat expression with the specifed target expression, and minimum and maximum occurances
+            </summary>
+            <param name="expression">The target expression</param>
+            <param name="minOccurs">The minimum number of times the target expression can occur or -1</param>
+            <param name="maxOccurs">The maximum number of times the target expression can occur or -1</param>
         </member>
         <member name="M:RE.RegexRepeatExpression.#ctor">
             <summary>
@@ -1710,30 +1762,117 @@
             see https://www.codeproject.com/Articles/5162847/ParseContext-2-0-Easier-Hand-Rolled-Parsers
             </summary>
         </member>
-        <member name="M:RE.ParseContext.ParseInteger">
+        <member name="M:RE.ParseContext.TryReadWhiteSpace">
             <summary>
-            Parses an integer from the input
+            Attempts to read whitespace from the current input, capturing it
             </summary>
-            <returns>An integer, a long, or a <see cref="T:System.Numerics.BigInteger"/> depending on what the number will fit.</returns>
+            <returns>True if whitespace was read, otherwise false</returns>
         </member>
-        <member name="M:RE.ParseContext.TryReadReal">
+        <member name="M:RE.ParseContext.TrySkipWhiteSpace">
             <summary>
-            Parses a real value (double precision floating point) from the input
+            Attempts to skip whitespace in the current input without capturing it
             </summary>
-            <returns>A double precision floating point number representing the value</returns>
+            <returns>True if whitespace was skipped, otherwise false</returns>
         </member>
-        <member name="M:RE.ParseContext.TrySkipReal">
+        <member name="M:RE.ParseContext.TryReadUntil(System.Int32,System.Boolean)">
             <summary>
-            Skips over a real number
+            Attempts to read up until the specified character, optionally consuming it
             </summary>
-            <returns>True if a number was found and skipped, otherwise false</returns>
+            <param name="character">The character to halt at</param>
+            <param name="readCharacter">True if the character should be consumed, otherwise false</param>
+            <returns>True if the character was found, otherwise false</returns>
         </member>
-        <member name="M:RE.ParseContext.TryParseReal(System.Double@)">
+        <member name="M:RE.ParseContext.TrySkipUntil(System.Int32,System.Boolean)">
             <summary>
-            Attempts to parse a real value (double precision floating point) from the input
+            Attempts to skip up until the specified character, optionally consuming it
             </summary>
-            <param name="result">The double precision floating point result</param>
-            <returns>True if the number could be read and parsed, otherwise false and capture contains the parsed input</returns>
+            <param name="character">The character to halt at</param>
+            <param name="skipCharacter">True if the character should be consumed, otherwise false</param>
+            <returns>True if the character was found, otherwise false</returns>
+        </member>
+        <member name="M:RE.ParseContext.TryReadUntil(System.Int32,System.Int32,System.Boolean)">
+            <summary>
+            Attempts to read up until the specified character, using the specified escape, optionally consuming it
+            </summary>
+            <param name="character">The character to halt at</param>
+            <param name="escapeChar">The escape indicator character to use</param>
+            <param name="readCharacter">True if the character should be consumed, otherwise false</param>
+            <returns>True if the character was found, otherwise false</returns>
+        </member>
+        <member name="M:RE.ParseContext.TrySkipUntil(System.Int32,System.Int32,System.Boolean)">
+            <summary>
+            Attempts to skip up until the specified character, using the specified escape, optionally consuming it
+            </summary>
+            <param name="character">The character to halt at</param>
+            <param name="escapeChar">The escape indicator character to use</param>
+            <param name="skipCharacter">True if the character should be consumed, otherwise false</param>
+            <returns>True if the character was found, otherwise false</returns>
+        </member>
+        <member name="M:RE.ParseContext.TryReadUntil(System.Boolean,System.Char[])">
+            <summary>
+            Attempts to read until any of the specified characters, optionally consuming it
+            </summary>
+            <param name="readCharacter">True if the character should be consumed, otherwise false</param>
+            <param name="anyOf">A list of characters that signal the end of the scan</param>
+            <returns>True if one of the characters was found, otherwise false</returns>
+        </member>
+        <member name="M:RE.ParseContext.TrySkipUntil(System.Boolean,System.Char[])">
+            <summary>
+            Attempts to skip until any of the specified characters, optionally consuming it
+            </summary>
+            <param name="skipCharacter">True if the character should be consumed, otherwise false</param>
+            <param name="anyOf">A list of characters that signal the end of the scan</param>
+            <returns>True if one of the characters was found, otherwise false</returns>
+        </member>
+        <member name="M:RE.ParseContext.TryReadUntil(System.String)">
+            <summary>
+            Reads up to the specified text string, consuming it
+            </summary>
+            <param name="text">The text to read until</param>
+            <returns>True if the text was found, otherwise false</returns>
+        </member>
+        <member name="M:RE.ParseContext.TrySkipUntil(System.String)">
+            <summary>
+            Skips up to the specified text string, consuming it
+            </summary>
+            <param name="text">The text to skip until</param>
+            <returns>True if the text was found, otherwise false</returns>
+        </member>
+        <member name="M:RE.ParseContext.TryReadDigits">
+            <summary>
+            Attempts to read a series of digits, consuming them
+            </summary>
+            <returns>True if digits were consumed, otherwise false</returns>
+        </member>
+        <member name="M:RE.ParseContext.TrySkipDigits">
+            <summary>
+            Attempts to skip a series of digits, consuming them
+            </summary>
+            <returns>True if digits were consumed, otherwise false</returns>
+        </member>
+        <member name="M:RE.ParseContext.TryReadLetters">
+            <summary>
+            Attempts to read a series of letters, consuming them
+            </summary>
+            <returns>True if letters were consumed, otherwise false</returns>
+        </member>
+        <member name="M:RE.ParseContext.TrySkipLetters">
+            <summary>
+            Attempts to skip a series of letters, consuming them
+            </summary>
+            <returns>True if letters were consumed, otherwise false</returns>
+        </member>
+        <member name="M:RE.ParseContext.TryReadLettersOrDigits">
+            <summary>
+            Attempts to read a series of letters or digits, consuming them
+            </summary>
+            <returns>True if letters or digits were consumed, otherwise false</returns>
+        </member>
+        <member name="M:RE.ParseContext.TrySkipLettersOrDigits">
+            <summary>
+            Attempts to skip a series of letters or digits, consuming them
+            </summary>
+            <returns>True if letters or digits were consumed, otherwise false</returns>
         </member>
         <member name="P:RE.ParseContext.CaptureBuffer">
             <summary>
@@ -1770,6 +1909,13 @@
             <summary>
             Ensures that the parse context is started and the input cursor is valid
             </summary>
+        </member>
+        <member name="M:RE.ParseContext.Peek(System.Int32)">
+            <summary>
+            Peeks the specified number of characters ahead in the input without advancing
+            </summary>
+            <param name="lookAhead">Indicates the number of characters to look ahead. Zero is the current position.</param>
+            <returns>An integer representing the character at the position, or -1 if past the end of the input.</returns>
         </member>
         <member name="M:RE.ParseContext.EnsureLookAhead(System.Int32)">
             <summary>
