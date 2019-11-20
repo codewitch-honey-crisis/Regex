@@ -6,8 +6,8 @@
 		/// Pattern matches through a string of text
 		/// </summary>
 		/// <param name="context">The parse context to search</param>
-		/// <returns>A <see cref="RegexMatch"/> that contains the match information, or null if the match is not found.</returns>
-		public RegexMatch Match(ParseContext context)
+		/// <returns>A <see cref="CharFAMatch"/> that contains the match information, or null if the match is not found.</returns>
+		public CharFAMatch Match(ParseContext context)
 		{
 			context.EnsureStarted();
 			var line = context.Line;
@@ -24,7 +24,7 @@
 				l = context.CaptureBuffer.Length;
 			}
 			if (success)
-				return new RegexMatch(
+				return new CharFAMatch(
 					line,
 					column,
 					position,
@@ -35,9 +35,9 @@
 		/// Pattern matches through a string of text using a DFA
 		/// </summary>
 		/// <param name="context">The parse context to search</param>
-		/// <returns>A <see cref="RegexMatch"/> that contains the match information, or null if the match is not found.</returns>
+		/// <returns>A <see cref="CharFAMatch"/> that contains the match information, or null if the match is not found.</returns>
 		/// <remarks>An NFA will not work with this method, but for performance reasons we cannot verify that the state machine is a DFA before running. Be sure to only use DFAs with this method.</remarks>
-		public RegexMatch MatchDfa(ParseContext context)
+		public CharFAMatch MatchDfa(ParseContext context)
 		{
 			context.EnsureStarted();
 			var line = context.Line;
@@ -54,7 +54,7 @@
 				l = context.CaptureBuffer.Length;
 			}
 			if (success)
-				return new RegexMatch(
+				return new CharFAMatch(
 					line,
 					column,
 					position,
@@ -65,9 +65,9 @@
 		/// Pattern matches through a string of text using a DFA
 		/// </summary>
 		/// <param name="context">The parse context to search</param>
-		/// <returns>A <see cref="RegexMatch"/> that contains the match information, or null if the match is not found.</returns>
+		/// <returns>A <see cref="CharFAMatch"/> that contains the match information, or null if the match is not found.</returns>
 		/// <remarks>An NFA will not work with this method, but for performance reasons we cannot verify that the state machine is a DFA before running. Be sure to only use DFAs with this method.</remarks>
-		public static RegexMatch MatchDfa(CharDfaEntry[] dfaTable, ParseContext context)
+		public static CharFAMatch MatchDfa(CharDfaEntry[] dfaTable, ParseContext context)
 		{
 			context.EnsureStarted();
 			var line = context.Line;
@@ -84,7 +84,7 @@
 				l = context.CaptureBuffer.Length;
 			}
 			if (success)
-				return new RegexMatch(
+				return new CharFAMatch(
 					line,
 					column,
 					position,

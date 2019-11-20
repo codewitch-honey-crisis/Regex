@@ -134,7 +134,7 @@ namespace RE
 			result.Name = "Match";
 			result.Attributes = MemberAttributes.FamilyAndAssembly | MemberAttributes.Static;
 			result.Parameters.Add(new CodeParameterDeclarationExpression(typeof(ParseContext), "context"));
-			result.ReturnType = new CodeTypeReference(typeof(RegexMatch));
+			result.ReturnType = new CodeTypeReference(typeof(CharFAMatch));
 			result.Statements.Add(new CodeMethodInvokeExpression(new CodeMethodReferenceExpression(new CodeArgumentReferenceExpression("context"), "EnsureStarted")));
 			var pcr = new CodeArgumentReferenceExpression(result.Parameters[0].Name);
 			var pccr = new CodePropertyReferenceExpression(pcr, "Current");
@@ -272,7 +272,7 @@ namespace RE
 			cccif.TrueStatements.Add(
 				new CodeMethodReturnStatement(
 					new CodeObjectCreateExpression(
-						typeof(RegexMatch),
+						typeof(CharFAMatch),
 						new CodeVariableReferenceExpression("line"),
 						new CodeVariableReferenceExpression("column"),
 						new CodeVariableReferenceExpression("position"),

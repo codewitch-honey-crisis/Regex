@@ -81,7 +81,7 @@ namespace RegexDemo
 				, "Word");
 			var dfaWord = word.ToDfa();
 			var dfaTableWord = word.ToDfaStateTable();
-			RegexMatch match;
+			CharFAMatch match;
 			var pc = ParseContext.Create(test);
 			Console.WriteLine("Matching words with an NFA:");
 			while (null != (match = word.Match(pc)))
@@ -306,7 +306,7 @@ namespace RegexDemo
 			context.Advance();
 			return 3;
 		}
-		internal static RE.RegexMatch Match(RE.ParseContext context)
+		internal static RE.CharFAMatch Match(RE.ParseContext context)
 		{
 			context.EnsureStarted();
 			int line = context.Line;
@@ -356,7 +356,7 @@ namespace RegexDemo
 			}
 			if (success)
 			{
-				return new RE.RegexMatch(line, column, position, context.GetCapture(l));
+				return new RE.CharFAMatch(line, column, position, context.GetCapture(l));
 			}
 			return null;
 		}
