@@ -1215,6 +1215,20 @@
             </summary>
             <returns>The new machine</returns>
         </member>
+        <member name="M:RE.CharFA`1.ClonePathTo(RE.CharFA{`0})">
+            <summary>
+            Returns a duplicate state machine, except one that only goes from this state to the state specified in <paramref name="to"/>. Any state that does not lead to that state is eliminated from the resulting graph.
+            </summary>
+            <param name="to">The state to track the path to</param>
+            <returns>A new state machine that only goes from this state to the state indicated by <paramref name="to"/></returns>
+        </member>
+        <member name="M:RE.CharFA`1.ClonePathToAny(System.Collections.Generic.IEnumerable{RE.CharFA{`0}})">
+            <summary>
+            Returns a duplicate state machine, except one that only goes from this state to any state specified in <paramref name="to"/>. Any state that does not lead to one of those states is eliminated from the resulting graph.
+            </summary>
+            <param name="to">The collection of destination states</param>
+            <returns>A new state machine that only goes from this state to the states indicated by <paramref name="to"/></returns>
+        </member>
         <member name="M:RE.CharFA`1.GenerateSymbolTableInitializer(`0[])">
             <summary>
             Generates a <see cref="T:System.CodeDom.CodeExpression"/> that can be used to initialize a symbol table
