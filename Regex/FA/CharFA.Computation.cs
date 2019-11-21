@@ -175,7 +175,11 @@ namespace RE
 				result = new Dictionary<CharFA<TAccept>, IList<CharRange>>();
 			// using the optimized dictionary we have little to do here.
 			foreach (var trns in (IDictionary<CharFA<TAccept>, ICollection<char>>)InputTransitions)
-				result.Add(trns.Key, new List<CharRange>(CharRange.GetRanges(trns.Value)));
+			{
+				var sl = new List<char>(trns.Value);
+				sl.Sort();
+				result.Add(trns.Key, new List<CharRange>(CharRange.GetRanges(sl)));
+			}
 			return result;
 		}
 	}

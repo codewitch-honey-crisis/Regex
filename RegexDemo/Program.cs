@@ -6,7 +6,7 @@ namespace RegexDemo
 {
 	class Program
 	{
-		private class _ConsoleProgreess : IProgress<CharFAProgress>
+		private class _ConsoleProgress : IProgress<CharFAProgress>
 		{
 			public void Report(CharFAProgress value)
 			{
@@ -21,6 +21,7 @@ namespace RegexDemo
 			_RunMatch();
 			_RunDom();
 			_RunStress();
+			_RunStress2();
 		}
 		static void _RunStress()
 		{
@@ -30,13 +31,34 @@ namespace RegexDemo
 			Console.WriteLine("C# keyword NFA has {0} states.",fa.FillClosure().Count);
 			Console.WriteLine("Reducing C# keywords");
 			// very expensive in this case
-			fa = fa.Reduce(new _ConsoleProgreess());
+			fa = fa.Reduce(new _ConsoleProgress());
 			Console.WriteLine();
 			Console.WriteLine("C# keyword DFA has {0} states.", fa.FillClosure().Count);
 			var dopt = new CharFA<string>.DotGraphOptions();
 			dopt.Dpi = 150; // make the image smaller
 			Console.WriteLine("Rendering stress.jpg");
 			fa.RenderToFile(@"..\..\..\stress.jpg");
+		}
+		static void _RunStress2()
+		{
+			CharFA<string> fa = null;
+			Console.Write("Building integer matching FA ");
+			for(var i = 0;i<=2000;++i)
+			{
+				if (null == fa)
+					fa = CharFA<string>.Literal(i.ToString());
+				else
+					fa = CharFA<string>.Or(new CharFA<string>[] { fa, CharFA<string>.Literal(i.ToString()) });
+				if(0==(i % 12))
+					fa=fa.Reduce(new _ConsoleProgress());
+				
+			}
+			fa=fa.Reduce(new _ConsoleProgress());
+			Console.WriteLine();
+			Console.WriteLine("C# integer DFA has {0} states.", fa.FillClosure().Count);
+			var dopt = new CharFA<string>.DotGraphOptions();
+			Console.WriteLine("Rendering stress2.jpg");
+			fa.RenderToFile(@"..\..\..\stress2.jpg");
 		}
 		static void _RunCompiledLexCodeGen()
 		{
