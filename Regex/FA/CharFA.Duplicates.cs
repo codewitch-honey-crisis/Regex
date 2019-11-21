@@ -102,7 +102,12 @@ namespace RE
 							{
 								var inps = td[repl.Key];
 								td.Remove(repl.Key);
-								td.Add(repl.Value, inps);
+								ICollection<char> v;
+								if (!td.TryGetValue(repl.Value, out v))
+									td.Add(repl.Value, inps);
+								else foreach (var inp in inps)
+										if (!v.Contains(inp))
+											v.Add(inp);
 
 							}
 

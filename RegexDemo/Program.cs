@@ -6,12 +6,37 @@ namespace RegexDemo
 {
 	class Program
 	{
+		private class _ConsoleProgreess : IProgress<CharFAProgress>
+		{
+			public void Report(CharFAProgress value)
+			{
+				Console.Write('.');
+			}
+		}
 		static void Main(string[] args)
 		{
 			// _BuildArticleImages()
+			// _RunCompiledLexCodeGen()
 			_RunLexer();
 			_RunMatch();
 			_RunDom();
+			_RunStress();
+		}
+		static void _RunStress()
+		{
+			const string cskw = "abstract|add|as|ascending|async|await|base|bool|break|byte|case|catch|char|checked|class|const|continue|decimal|default|delegate|descending|do|double|dynamic|else|enum|equals|explicit|extern|false|finally|fixed|float|for|foreach|get|global|goto|if|implicit|int|interface|internal|is|lock|long|namespace|new|null|object|operator|out|override|params|partial|private|protected|public|readonly|ref|remove|return|sbyte|sealed|set|short|sizeof|stackalloc|static|string|struct|switch|this|throw|true|try|typeof|uint|ulong|unchecked|unsafe|ushort|using|var|virtual|void|volatile|while|yield";
+			var expr = RegexExpression.Parse(cskw);
+			var fa = expr.ToFA("");
+			Console.WriteLine("C# keyword NFA has {0} states.",fa.FillClosure().Count);
+			Console.WriteLine("Reducing C# keywords");
+			// very expensive in this case
+			fa = fa.Reduce(new _ConsoleProgreess());
+			Console.WriteLine();
+			Console.WriteLine("C# keyword DFA has {0} states.", fa.FillClosure().Count);
+			var dopt = new CharFA<string>.DotGraphOptions();
+			dopt.Dpi = 150; // make the image smaller
+			Console.WriteLine("Rendering stress.jpg");
+			fa.RenderToFile(@"..\..\..\stress.jpg");
 		}
 		static void _RunCompiledLexCodeGen()
 		{
@@ -70,6 +95,7 @@ namespace RegexDemo
 			rep.MinOccurs = 1;
 			Console.WriteLine(dom.ToString());
 			dom.ToFA("Accept");
+			Console.WriteLine();
 		}
 		static void _RunMatch()
 		{
@@ -86,19 +112,22 @@ namespace RegexDemo
 			Console.WriteLine("Matching words with an NFA:");
 			while (null != (match = word.Match(pc)))
 				Console.WriteLine("Found match at {0}: {1}", match.Position, match.Value);
+			Console.WriteLine();
 			pc = ParseContext.Create(test);
 			Console.WriteLine("Matching words with a DFA:");
 			while (null != (match = dfaWord.MatchDfa(pc)))
 				Console.WriteLine("Found match at {0}: {1}", match.Position, match.Value);
+			Console.WriteLine();
 			pc = ParseContext.Create(test);
 			Console.WriteLine("Matching words with a DFA state table:");
 			while (null != (match = CharFA<string>.MatchDfa(dfaTableWord, pc)))
 				Console.WriteLine("Found match at {0}: {1}", match.Position, match.Value);
+			Console.WriteLine();
 			pc = ParseContext.Create(test);
 			Console.WriteLine("Matching words with a compiled DFA:");
 			while (null != (match = Match(pc)))
 				Console.WriteLine("Found match at {0}: {1}", match.Position, match.Value);
-
+			Console.WriteLine();
 		}
 		static void _RunLexer()
 		{
@@ -114,10 +143,7 @@ namespace RegexDemo
 				CharFA<string>.Set(" \t\r\n\v\f"),
 				1, -1
 				, "Whitespace");
-			var lexer = new CharFA<string>();
-			lexer.EpsilonTransitions.Add(digits);
-			lexer.EpsilonTransitions.Add(word);
-			lexer.EpsilonTransitions.Add(whitespace);
+			var lexer = CharFA<string>.ToLexer(digits, word, whitespace);
 			var lexerDfa = lexer.ToDfa();
 			lexerDfa.TrimDuplicates();
 			// we use a symbol table with the DFA state table to map ids back to strings
@@ -184,6 +210,7 @@ namespace RegexDemo
 				// symbol using our symbol table
 				Console.WriteLine("{0}: {1}", symbolTable[acc], pc.GetCapture());
 			}
+			Console.WriteLine();
 		}
 		static void _BuildArticleImages()
 		{
