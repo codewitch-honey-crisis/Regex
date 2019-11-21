@@ -8,6 +8,8 @@ It supports streaming, tokenization (lexing) and matching (find), plus many POSI
 
 It can also render state graphs using GraphViz (http://www.graphviz.org)
 
+It includes an abstract syntax tree/DOM for manipulating expressions
+
 The source code is heavily partitioned and commented for easy perusal and navigation
 
 There's an entire associated article on building it at Code Project
