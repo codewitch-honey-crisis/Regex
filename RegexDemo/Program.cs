@@ -15,16 +15,18 @@ namespace RegexDemo
 		}
 		static void Main(string[] args)
 		{
-			// _BuildArticleImages()
+			// _BuildArticleImages() // requires GraphViz
 			// _RunCompiledLexCodeGen()
 			_RunLexer();
 			_RunMatch();
 			_RunDom();
+			// the following require GraphViz
 			_RunStress();
 			_RunStress2();
 		}
 		static void _RunStress()
 		{
+			// C# keywords
 			const string cskw = "abstract|add|as|ascending|async|await|base|bool|break|byte|case|catch|char|checked|class|const|continue|decimal|default|delegate|descending|do|double|dynamic|else|enum|equals|explicit|extern|false|finally|fixed|float|for|foreach|get|global|goto|if|implicit|int|interface|internal|is|lock|long|namespace|new|null|object|operator|out|override|params|partial|private|protected|public|readonly|ref|remove|return|sbyte|sealed|set|short|sizeof|stackalloc|static|string|struct|switch|this|throw|true|try|typeof|uint|ulong|unchecked|unsafe|ushort|using|var|virtual|void|volatile|while|yield";
 			var expr = RegexExpression.Parse(cskw);
 			var fa = expr.ToFA("");
@@ -37,14 +39,15 @@ namespace RegexDemo
 			var dopt = new CharFA<string>.DotGraphOptions();
 			dopt.Dpi = 150; // make the image smaller
 			Console.WriteLine("Rendering stress.jpg");
-			fa.RenderToFile(@"..\..\..\stress.jpg");
+			fa.RenderToFile(@"..\..\..\stress.jpg",dopt);
 		}
 		static void _RunStress2()
 		{
 			CharFA<string> fa = null;
-			Console.Write("Building integer matching FA ");
+			Console.Write("Building FA matching integer values 0-2000 ");
 			for(var i = 0;i<=2000;++i)
 			{
+				// for perf reasons we reduce every 12 times
 				if (null == fa)
 					fa = CharFA<string>.Literal(i.ToString());
 				else
@@ -56,7 +59,6 @@ namespace RegexDemo
 			fa=fa.Reduce(new _ConsoleProgress());
 			Console.WriteLine();
 			Console.WriteLine("C# integer DFA has {0} states.", fa.FillClosure().Count);
-			var dopt = new CharFA<string>.DotGraphOptions();
 			Console.WriteLine("Rendering stress2.jpg");
 			fa.RenderToFile(@"..\..\..\stress2.jpg");
 		}
