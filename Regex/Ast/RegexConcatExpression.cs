@@ -62,7 +62,10 @@ namespace RE
 				return (null != Right) ? Right.ToFA(accept) : null;
 			else if (null == Right)
 				return Left.ToFA(accept);
-			return CharFA<TAccept>.Concat(new CharFA<TAccept>[] { Left.ToFA(accept), Right.ToFA(accept) }, accept);
+			var result = CharFA<TAccept>.Concat(new CharFA<TAccept>[] { Left.ToFA(accept), Right.ToFA(accept) }, accept);
+			if(null!=Left as RegexConcatExpression || null!=Right as RegexConcatExpression)
+				result.TrimNeutrals();
+			return result;
 		}
 		/// <summary>
 		/// Creates a new copy of this expression

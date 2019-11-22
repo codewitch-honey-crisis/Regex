@@ -202,8 +202,12 @@ namespace RE
 
 			public void Add(char key, CharFA<TAccept> value)
 			{
+				if (null == value)
+					throw new ArgumentNullException(nameof(value));
 				if (ContainsKey(key))
 					throw new InvalidOperationException("The key is already present in the dictionary.");
+				if (null == value)
+					throw new ArgumentNullException(nameof(value));
 				ICollection<char> hs;
 				if (_inner.TryGetValue(value, out hs))
 				{
@@ -320,7 +324,11 @@ namespace RE
 				=> GetEnumerator();
 
 			void IDictionary<CharFA<TAccept>, ICollection<char>>.Add(CharFA<TAccept> key, ICollection<char> value)
-				=> _inner.Add(key, value);
+			{
+				if (null == value)
+					throw new ArgumentNullException(nameof(value));
+				_inner.Add(key, value);
+			}
 
 			bool IDictionary<CharFA<TAccept>, ICollection<char>>.ContainsKey(CharFA<TAccept> key)
 				=> _inner.ContainsKey(key);
@@ -334,7 +342,13 @@ namespace RE
 
 
 			void ICollection<KeyValuePair<CharFA<TAccept>, ICollection<char>>>.Add(KeyValuePair<CharFA<TAccept>, ICollection<char>> item)
-				=> _inner.Add(item);
+			{
+				if (null == item.Key)
+					throw new ArgumentNullException(nameof(item), "The state cannot be null");
+				if (null == item.Value)
+					throw new ArgumentNullException(nameof(item),"The collection cannot be null");
+				_inner.Add(item);
+			}
 
 			bool ICollection<KeyValuePair<CharFA<TAccept>, ICollection<char>>>.Contains(KeyValuePair<CharFA<TAccept>, ICollection<char>> item)
 				=> _inner.Contains(item);
@@ -356,7 +370,13 @@ namespace RE
 				=> _InnerList.IndexOf(item);
 
 			void IList<KeyValuePair<CharFA<TAccept>, ICollection<char>>>.Insert(int index, KeyValuePair<CharFA<TAccept>, ICollection<char>> item)
-				=> _InnerList.Insert(index, item);
+			{
+				if (null == item.Key)
+					throw new ArgumentNullException(nameof(item),"The state cannot be null");
+				if (null == item.Value)
+					throw new ArgumentNullException(nameof(item), "The collection cannot be null");
+				_InnerList.Insert(index, item);
+			}
 
 			void IList<KeyValuePair<CharFA<TAccept>, ICollection<char>>>.RemoveAt(int index)
 				=> _InnerList.RemoveAt(index);

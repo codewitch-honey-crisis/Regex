@@ -1571,6 +1571,17 @@
             <param name="result">The list of neutral states. Will be filled after the call.</param>
             <returns>The resulting list of neutral states. This is the same value as the result parameter, if specified.</returns>
         </member>
+        <member name="M:RE.CharFA`1.TrimNeutrals">
+            <summary>
+            Trims the neutral states from this machine
+            </summary>
+        </member>
+        <member name="M:RE.CharFA`1.TrimNeutrals(System.Collections.Generic.IEnumerable{RE.CharFA{`0}})">
+            <summary>
+            Trims the neutral states from the specified closure
+            </summary>
+            <param name="closure">The set of all states</param>
+        </member>
         <member name="M:RE.CharFA`1.ToDfa(System.IProgress{RE.CharFAProgress})">
             <summary>
             Transforms an NFA to a DFA

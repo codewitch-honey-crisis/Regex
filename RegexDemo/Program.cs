@@ -15,6 +15,10 @@ namespace RegexDemo
 		}
 		static void Main(string[] args)
 		{
+			var dom = RegexExpression.Parse("foobar");
+			var fa = dom.ToFA<string>();
+			fa.RenderToFile(@"..\..\..\foobar_dom.jpg");
+			return;
 			// _BuildArticleImages() // requires GraphViz
 			// _RunCompiledLexCodeGen()
 			_RunLexer();
