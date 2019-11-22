@@ -44,19 +44,23 @@ namespace RegexDemo
 		static void _RunStress2()
 		{
 			CharFA<string> fa = null;
-			Console.Write("Building FA matching integer values 0-2000 ");
-			for(var i = 0;i<=2000;++i)
+			var max = 255;
+			Console.Write("Building NFA matching integer values 0-{0} ",max);
+			for(var i = 0;i<=max;++i)
 			{
 				// for perf reasons we reduce every 12 times
 				if (null == fa)
 					fa = CharFA<string>.Literal(i.ToString());
 				else
 					fa = CharFA<string>.Or(new CharFA<string>[] { fa, CharFA<string>.Literal(i.ToString()) });
-				if(0==(i % 12))
-					fa=fa.Reduce(new _ConsoleProgress());
-				
+				if (0 == (i % 12))
+					Console.Write('.');
+				// replace the above "Console.Write('.');" line with below is MUCH faster
+				//	fa=fa.Reduce(new _ConsoleProgress());
 			}
-			fa=fa.Reduce(new _ConsoleProgress());
+			Console.WriteLine();
+			Console.WriteLine("C# integer NFA has {0} states.", fa.FillClosure().Count);
+			fa =fa.Reduce(new _ConsoleProgress());
 			Console.WriteLine();
 			Console.WriteLine("C# integer DFA has {0} states.", fa.FillClosure().Count);
 			Console.WriteLine("Rendering stress2.jpg");
