@@ -15,10 +15,6 @@ namespace RegexDemo
 		}
 		static void Main(string[] args)
 		{
-			var dom = RegexExpression.Parse("foobar");
-			var fa = dom.ToFA<string>();
-			fa.RenderToFile(@"..\..\..\foobar_dom.jpg");
-			return;
 			// _BuildArticleImages() // requires GraphViz
 			// _RunCompiledLexCodeGen()
 			_RunLexer();
@@ -48,9 +44,10 @@ namespace RegexDemo
 		static void _RunStress2()
 		{
 			CharFA<string> fa = null;
-			var max = 255;
-			Console.Write("Building NFA matching integer values 0-{0} ",max);
-			for(var i = 0;i<=max;++i)
+			var min = 255;
+			var max = 511;
+			Console.Write("Building NFA matching integer values {0}-{1} ",min,max);
+			for(var i = min;i<=max;++i)
 			{
 				// for perf reasons we reduce every 12 times
 				if (null == fa)
