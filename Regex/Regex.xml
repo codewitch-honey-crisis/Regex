@@ -511,6 +511,16 @@
             <param name="accept">The accept symbol to use for this expression</param>
             <returns>A new <see cref="T:RE.CharFA`1"/> finite state machine representing this expression</returns>
         </member>
+        <member name="M:RE.RegexExpression.FromFA``1(RE.CharFA{``0},System.IProgress{RE.CharFAProgress})">
+            <summary>
+            EXPERIMENTAL, INCOMPLETE
+            Builds an abstract syntax tree/DOM from the specified state machine
+            </summary>
+            <typeparam name="TAccept">The type of accept symbol</typeparam>
+            <param name="fa">The state machine to analyze</param>
+            <param name="progress">An optional <see cref="T:System.IProgress`1"/> instance used to report the progress of the task</param>
+            <returns>A regular expression syntax tree representing <paramref name="fa"/></returns>
+        </member>
         <member name="M:RE.RegexExpression.AppendTo(System.Text.StringBuilder)">
             <summary>
             Appends the textual representation to a <see cref="T:System.Text.StringBuilder"/>
@@ -1204,6 +1214,11 @@
             <param name="result">The accept symbol, if the method returned true</param>
             <returns>True if an accept symbol was found, otherwise false</returns>
         </member>
+        <member name="P:RE.CharFA`1.IsLoop">
+            <summary>
+            Indicates whether the state machine is a loop or not
+            </summary>
+        </member>
         <member name="P:RE.CharFA`1.CharacterClasses">
             <summary>
             Retrieves a dictionary indicating the character classes supported by this library
@@ -1291,6 +1306,19 @@
             <param name="states">The states to examine</param>
             <param name="result">The result to be filled</param>
             <returns>The epsilon closure of <paramref name="states"/></returns>
+        </member>
+        <member name="M:RE.CharFA`1.FillDescendants(System.Collections.Generic.IList{RE.CharFA{`0}})">
+            <summary>
+            Retrieves all states that are descendants of this state
+            </summary>
+            <param name="result">A collection to hold the result or null to create one</param>
+            <returns>A collection containing the descendants of this state</returns>
+        </member>
+        <member name="P:RE.CharFA`1.Descendants">
+            <summary>
+            Retrieves an enumeration that indicates the descendants of the state
+            </summary>
+            <remarks>This uses lazy evaluation.</remarks>
         </member>
         <member name="M:RE.CharFA`1.FillMove(System.Collections.Generic.IEnumerable{RE.CharFA{`0}},System.Char,System.Collections.Generic.IList{RE.CharFA{`0}})">
             <summary>

@@ -35,14 +35,40 @@ namespace RE
 					_inner[i] = new KeyValuePair<TKey, TValue>(key, value);
 			}
 		}
-		public object GetValueAt(int index)
+		public TKey GetKeyAt(int index)
+			=> _inner[index].Key;
+		public TValue GetAt(int index)
 			=> _inner[index].Value;
+		public void SetAt(int index, TValue value)
+		{
+			_inner[index] = new KeyValuePair<TKey, TValue>(_inner[index].Key, value);
+		}
+		public void SetAt(int index, KeyValuePair<TKey,TValue> item)
+		{
+			if (ContainsKey(item.Key))
+				throw new ArgumentException("An item with the specified key already exists in the dictionary.", nameof(item));
+			_inner[index] = item;
+		}
+		public void SetKeyAt(int index, TKey key)
+		{
+			if (ContainsKey(key) && index != IndexOfKey(key))
+				throw new ArgumentException("An item with the specified key already exists in the dictionary.");
+			_inner[index] = new KeyValuePair<TKey, TValue>(key, _inner[index].Value);
+				
+		}
+		
+		public void Insert(int index, TKey key, TValue value)
+		{
+			if (ContainsKey(key))
+				throw new ArgumentException("The key already exists in the dictionary.");
+			_inner.Insert(index, new KeyValuePair<TKey, TValue>(key, value));
+		}
 		public ICollection<TKey> Keys { get => new _KeysCollection(_inner, _equalityComparer); }
 		public ICollection<TValue> Values { get => new _ValuesCollection(_inner); }
 		public int Count { get => _inner.Count; }
 		public bool IsReadOnly { get => _inner.IsReadOnly; }
 
-		public KeyValuePair<TKey, TValue> this[int index] {
+		KeyValuePair<TKey, TValue> IList<KeyValuePair<TKey, TValue>>.this[int index] {
 			get => _inner[index];
 			set {
 				var i = IndexOfKey(value.Key);
@@ -141,7 +167,7 @@ namespace RE
 			return _inner.IndexOf(item);
 		}
 
-		public void Insert(int index, KeyValuePair<TKey, TValue> item)
+		void IList<KeyValuePair<TKey,TValue>>.Insert(int index, KeyValuePair<TKey, TValue> item)
 		{
 			if (0 > IndexOfKey(item.Key))
 				_inner.Insert(index, item);

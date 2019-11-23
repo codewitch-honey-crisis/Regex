@@ -8,7 +8,7 @@ namespace RE
 		/// Indicates whether or not the state is neutral
 		/// </summary>
 		public bool IsNeutral {
-			get { return 0 == InputTransitions.Count && 1 == EpsilonTransitions.Count; }
+			get { return !IsAccepting && 0 == InputTransitions.Count && 1 == EpsilonTransitions.Count; }
 		}
 
 		/// <summary>

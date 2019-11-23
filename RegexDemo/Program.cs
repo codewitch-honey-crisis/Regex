@@ -13,7 +13,7 @@ namespace RegexDemo
 				Console.Write('.');
 			}
 		}
-		static void Main(string[] args)
+		static void Main()
 		{
 			// _BuildArticleImages() // requires GraphViz
 			// _RunCompiledLexCodeGen()
@@ -23,6 +23,34 @@ namespace RegexDemo
 			// the following require GraphViz
 			_RunStress();
 			_RunStress2();
+		}
+		static void _RunFromFA()
+		{
+
+			var expr = RegexExpression.Parse("(0*11*0[01]*)");
+			var fa = expr.ToFA<string>();
+			
+			fa.IsAccepting = true; // modify the expression by changing the FSM
+			var x = new CharFA<string>();
+			var y = new CharFA<string>();
+			var z = new CharFA<string>(true);
+			x.InputTransitions.Add('a', y);
+			y.InputTransitions.Add('b', y);
+			y.InputTransitions.Add('c', z);
+			fa = x;
+			var test = "[A-Z_a-z][0-9A-Z_a-z]*";
+			//test = "ab*c";
+			test = "(foo)*bar";
+			fa = RegexExpression.Parse(test).ToFA<string>();
+			fa.RenderToFile(@"..\..\..\test_expr_nfa.jpg");
+			var ffa = fa.ToDfa();
+			ffa.RenderToFile(@"..\..\..\test_expr.jpg");
+			expr = RegexExpression.FromFA(fa);
+			Console.WriteLine(expr);
+			fa.RenderToFile(@"..\..\..\test_nfa.jpg");
+			var dfa = fa.ToDfa();
+			dfa.RenderToFile(@"..\..\..\test.jpg");
+			
 		}
 		static void _RunStress()
 		{
@@ -36,6 +64,8 @@ namespace RegexDemo
 			fa = fa.Reduce(new _ConsoleProgress());
 			Console.WriteLine();
 			Console.WriteLine("C# keyword DFA has {0} states.", fa.FillClosure().Count);
+			Console.WriteLine("First Expression: {0}", cskw);
+			Console.WriteLine("Final Expression: {0}", RegexExpression.FromFA(fa));
 			var dopt = new CharFA<string>.DotGraphOptions();
 			dopt.Dpi = 150; // make the image smaller
 			Console.WriteLine("Rendering stress.jpg");
@@ -44,26 +74,31 @@ namespace RegexDemo
 		static void _RunStress2()
 		{
 			CharFA<string> fa = null;
-			var min = 255;
-			var max = 511;
+			var min = 599;
+			var max = 639;
 			Console.Write("Building NFA matching integer values {0}-{1} ",min,max);
 			for(var i = min;i<=max;++i)
 			{
-				// for perf reasons we reduce every 12 times
 				if (null == fa)
 					fa = CharFA<string>.Literal(i.ToString());
 				else
 					fa = CharFA<string>.Or(new CharFA<string>[] { fa, CharFA<string>.Literal(i.ToString()) });
+				// for perf reasons we can reduce every 12 times
 				if (0 == (i % 12))
 					Console.Write('.');
 				// replace the above "Console.Write('.');" line with below is MUCH faster
 				//	fa=fa.Reduce(new _ConsoleProgress());
 			}
 			Console.WriteLine();
+			fa.TrimNeutrals();
+			//fa.TrimDuplicates();
 			Console.WriteLine("C# integer NFA has {0} states.", fa.FillClosure().Count);
+			fa.RenderToFile(@"..\..\..\stress2_nfa.jpg");
 			fa =fa.Reduce(new _ConsoleProgress());
 			Console.WriteLine();
 			Console.WriteLine("C# integer DFA has {0} states.", fa.FillClosure().Count);
+			var expr = RegexExpression.FromFA(fa);
+			Console.WriteLine("Final Expression: {0}", expr);
 			Console.WriteLine("Rendering stress2.jpg");
 			fa.RenderToFile(@"..\..\..\stress2.jpg");
 		}

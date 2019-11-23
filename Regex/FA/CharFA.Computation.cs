@@ -90,6 +90,38 @@ namespace RE
 			return result;
 		}
 		/// <summary>
+		/// Retrieves all states that are descendants of this state
+		/// </summary>
+		/// <param name="result">A collection to hold the result or null to create one</param>
+		/// <returns>A collection containing the descendants of this state</returns>
+		public IList<CharFA<TAccept>> FillDescendants(IList<CharFA<TAccept>> result = null)
+		{
+			if(null==result)
+				result = new List<CharFA<TAccept>>();
+			foreach(var trns in InputTransitions as IDictionary<CharFA<TAccept>,ICollection<char>>)
+				trns.Key.FillClosure(result);
+			foreach (var fa in EpsilonTransitions)
+				fa.FillClosure(result);
+			return result;
+		}
+		/// <summary>
+		/// Retrieves an enumeration that indicates the descendants of the state
+		/// </summary>
+		/// <remarks>This uses lazy evaluation.</remarks>
+		public IEnumerable<CharFA<TAccept>> Descendants
+			=> _EnumDescendants(new HashSet<CharFA<TAccept>>());
+
+		// lazy closure implementation
+		IEnumerable<CharFA<TAccept>> _EnumDescendants(HashSet<CharFA<TAccept>> visited)
+		{
+			foreach (var trns in InputTransitions as IDictionary<CharFA<TAccept>, ICollection<char>>)
+				foreach (var fa in trns.Key._EnumClosure(visited))
+					yield return fa;
+			foreach (var fa in EpsilonTransitions)
+				foreach (var ffa in fa._EnumClosure(visited))
+					yield return ffa;
+		}
+		/// <summary>
 		/// Fills a collection with the result of moving each of the specified <paramref name="states"/> by the specified input.
 		/// </summary>
 		/// <param name="states">The states to examine</param>

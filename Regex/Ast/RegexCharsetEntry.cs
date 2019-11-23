@@ -264,6 +264,10 @@ namespace RE
 		/// <returns>The string representation of this charset entry</returns>
 		public override string ToString()
 		{
+			if (1 == Last - First)
+				return string.Concat(RegexExpression.EscapeRangeChar(First), RegexExpression.EscapeRangeChar(Last));
+			if(2==Last-First)
+				return string.Concat(RegexExpression.EscapeRangeChar(First), RegexExpression.EscapeRangeChar((char)(First+1)), RegexExpression.EscapeRangeChar(Last));
 			return string.Concat(RegexExpression.EscapeRangeChar(First), "-", RegexExpression.EscapeRangeChar(Last));
 		}
 		#region Value semantics

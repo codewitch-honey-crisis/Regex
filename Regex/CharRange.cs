@@ -232,8 +232,11 @@ namespace RE
 		{
 			if (First == Last)
 				return _Escape(First);
-			if (First + 1 == Last)
+			if (2==Length)
 				return string.Concat(_Escape(First), _Escape(Last));
+			if (3 == Length)
+				return string.Concat(_Escape(First), _Escape((char)(First+1)), _Escape(Last));
+
 			return string.Concat(_Escape(First), "-", _Escape(Last));
 		}
 		// throws on attempt to write
