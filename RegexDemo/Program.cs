@@ -65,7 +65,7 @@ namespace RegexDemo
 			Console.WriteLine();
 			Console.WriteLine("C# keyword DFA has {0} states.", fa.FillClosure().Count);
 			Console.WriteLine("First Expression: {0}", cskw);
-			Console.WriteLine("Final Expression: {0}", RegexExpression.FromFA(fa));
+			//Console.WriteLine("Final Expression: {0}", RegexExpression.FromFA(fa));
 			var dopt = new CharFA<string>.DotGraphOptions();
 			dopt.Dpi = 150; // make the image smaller
 			Console.WriteLine("Rendering stress.jpg");
@@ -97,8 +97,8 @@ namespace RegexDemo
 			fa =fa.Reduce(new _ConsoleProgress());
 			Console.WriteLine();
 			Console.WriteLine("C# integer DFA has {0} states.", fa.FillClosure().Count);
-			var expr = RegexExpression.FromFA(fa);
-			Console.WriteLine("Final Expression: {0}", expr);
+			//var expr = RegexExpression.FromFA(fa);
+			//Console.WriteLine("Final Expression: {0}", expr);
 			Console.WriteLine("Rendering stress2.jpg");
 			fa.RenderToFile(@"..\..\..\stress2.jpg");
 		}
